@@ -49,7 +49,10 @@ class Player {
 const player = new Player();
 scene.add(player.sprite);
 
-const gridHelper = new THREE.GridHelper(10, 10).rotateX(90);
+const gridSize = 10;
+const gridHelper = new THREE.GridHelper(gridSize, gridSize).rotateX(
+  Math.PI / 2,
+);
 scene.add(gridHelper);
 
 function animate() {
