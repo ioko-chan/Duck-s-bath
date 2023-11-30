@@ -4,7 +4,7 @@ import nipplejs from "nipplejs";
 const scene = new THREE.Scene();
 const w = window.innerWidth;
 const h = window.innerHeight;
-const viewSize = h / 100;
+const viewSize = h / 200;
 const aspectRatio = w / h;
 const viewport = {
   viewsize: viewSize,
@@ -42,11 +42,8 @@ class Player {
   }
 
   update(dt) {
-    if (this.direction.lengthSq() !== 0) {
-      let direction = new THREE.Vector2().copy(this.direction).normalize();
-      this.sprite.translateX(direction.x * this.movementSpeed * dt);
-      this.sprite.translateY(direction.y * this.movementSpeed * dt);
-    }
+    this.sprite.translateX(this.direction.x * this.movementSpeed * dt);
+    this.sprite.translateY(this.direction.y * this.movementSpeed * dt);
   }
 }
 const player = new Player();
@@ -54,48 +51,6 @@ scene.add(player.sprite);
 
 const gridHelper = new THREE.GridHelper(10, 10).rotateX(90);
 scene.add(gridHelper);
-
-document.addEventListener("keydown", (event) => {
-  if (event.repeat === true) return;
-  switch (event.key.toLowerCase()) {
-    case "a":
-      player.direction.x -= 1;
-      break;
-    case "d":
-      player.direction.x += 1;
-      break;
-    case "w":
-      player.direction.y += 1;
-      break;
-    case "s":
-      player.direction.y -= 1;
-      break;
-
-    default:
-      break;
-  }
-});
-
-document.addEventListener("keyup", (event) => {
-  if (event.repeat === true) return;
-  switch (event.key.toLowerCase()) {
-    case "a":
-      player.direction.x += 1;
-      break;
-    case "d":
-      player.direction.x -= 1;
-      break;
-    case "w":
-      player.direction.y -= 1;
-      break;
-    case "s":
-      player.direction.y += 1;
-      break;
-
-    default:
-      break;
-  }
-});
 
 function animate() {
   requestAnimationFrame(animate);
@@ -105,4 +60,19 @@ function animate() {
 }
 animate();
 
-let manager = nipplejs.create();
+const nipplejsWrapper = document.getElementById("nipplejs-wrapper");
+let manager = nipplejs.create({
+  size: (nipplejsWrapper.clientHeight * 3) / 4,
+  zone: nipplejsWrapper,
+  mode: "static",
+  position: { top: "10dvh", left: "10dvh" },
+});
+manager.on("move", (_event, data) => {
+  player.direction = new THREE.Vector2(
+    data.vector.x,
+    data.vector.y,
+  ).multiplyScalar(Math.min(data.force, 1));
+});
+manager.on("end", (_event) => {
+  player.direction = new THREE.Vector2(0, 0);
+});
