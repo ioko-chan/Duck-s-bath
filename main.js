@@ -45,7 +45,7 @@ const gridHelper = new THREE.GridHelper(gridSize, gridSize).rotateX(
 );
 scene.add(gridHelper);
 
-const debugInfo = new DebugInfo(document.getElementById("debug-wrapper"), 200);
+const debugInfo = new DebugInfo(document.getElementById("debug-wrapper"), 100);
 
 function animate() {
   // Render
@@ -61,6 +61,7 @@ function animate() {
   debugInfo.infos[1] = `Player position: ${
     Math.floor(player.sprite.position.x * 100) / 100
   } ${Math.floor(player.sprite.position.y * 100) / 100}`;
+  debugInfo.infos[2] = `Current frame: ${Math.ceil(player.currentFrame)}`;
 
   requestAnimationFrame(animate);
 }
