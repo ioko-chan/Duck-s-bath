@@ -2,7 +2,7 @@ import * as THREE from "three";
 
 class Player {
   constructor() {
-    this.texture = new THREE.TextureLoader().load("duck.png");
+    this.texture = new THREE.TextureLoader().load("уткап.png");
     this.texture.colorSpace = THREE.SRGBColorSpace;
     this.texture.minFilter = THREE.NearestFilter;
     this.texture.magFilter = THREE.NearestFilter;
