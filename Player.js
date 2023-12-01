@@ -32,62 +32,55 @@ class Player {
   }
 
   update(dt) {
+    this.movement(dt);
+    this.animation(dt);
+  }
+
+  movement(dt) {
     this.sprite.translateX(this.direction.x * this.movementSpeed * dt);
     this.sprite.translateY(this.direction.y * this.movementSpeed * dt);
+  }
 
-    if (this.direction.lengthSq() === 0) {
+  animation(dt) {
+    if (this.direction.x === 0 && this.direction.y === 0) {
       this.currentAnimation = animationProperties.idle;
       this.texture.repeat.setX(1 / this.textureFramesHorizontal);
-    } else if (
-      Math.abs(this.direction.y - this.direction.x) < 0.5 &&
-      this.direction.x > 0 &&
-      this.direction.y > 0
-    ) {
-      this.currentAnimation = animationProperties.walk_right_up;
-      this.texture.repeat.setX(1 / this.textureFramesHorizontal);
-    } else if (
-      Math.abs(this.direction.y + this.direction.x) < 0.5 &&
-      this.direction.x < 0 &&
-      this.direction.y > 0
-    ) {
-      this.currentAnimation = animationProperties.walk_right_up;
-      this.texture.repeat.setX(-1 / this.textureFramesHorizontal);
-    } else if (
-      Math.abs(this.direction.y + this.direction.x) < 0.5 &&
-      this.direction.x > 0 &&
-      this.direction.y < 0
-    ) {
-      this.currentAnimation = animationProperties.walk_right_down;
-      this.texture.repeat.setX(1 / this.textureFramesHorizontal);
-    } else if (
-      this.direction.y > Math.abs(this.direction.x) &&
-      this.direction.y > 0
-    ) {
-      this.currentAnimation = animationProperties.walk_up;
-      this.texture.repeat.setX(1 / this.textureFramesHorizontal);
-    } else if (
-      Math.abs(this.direction.y - this.direction.x) < 0.5 &&
-      this.direction.x < 0 &&
-      this.direction.y < 0
-    ) {
-      this.currentAnimation = animationProperties.walk_right_down;
-      this.texture.repeat.setX(-1 / this.textureFramesHorizontal);
-    } else if (
-      Math.abs(this.direction.y) > Math.abs(this.direction.x) &&
-      this.direction.y < 0
-    ) {
-      this.currentAnimation = animationProperties.walk_down;
-      this.texture.repeat.setX(1 / this.textureFramesHorizontal);
-    } else if (this.direction.x > 0) {
-      this.currentAnimation = animationProperties.walk_right;
-      this.texture.repeat.setX(1 / this.textureFramesHorizontal);
-    } else if (this.direction.x < 0) {
-      this.currentAnimation = animationProperties.walk_right;
-      this.texture.repeat.setX(-1 / this.textureFramesHorizontal);
+    } else {
+      const angle = Math.atan2(this.direction.y, this.direction.x);
+      const octant = Math.round((8 * angle) / (2 * Math.PI) + 8) % 8;
+      switch (octant) {
+        case 0: // Right
+        case 4: // Left
+          this.currentAnimation = animationProperties.walk_right;
+          break;
+        case 1: // Right top
+        case 3: // Left top
+          this.currentAnimation = animationProperties.walk_right_up;
+          break;
+        case 2: // Top
+          this.currentAnimation = animationProperties.walk_up;
+          break;
+        case 5: // Left bottom
+        case 7: // Right bottom
+          this.currentAnimation = animationProperties.walk_right_down;
+          break;
+        case 6: // Bottom
+          this.currentAnimation = animationProperties.walk_down;
+          break;
+        default:
+          console.error(`Wrong octant value: ${octant}`);
+          break;
+      }
+
+      // Flip if move left
+      this.texture.repeat.setX(
+        (octant >= 3 && octant <= 5 ? -1 : 1) / this.textureFramesHorizontal,
+      );
     }
 
-    this.currentFrame += dt * this.framesPerSecond;
-    this.currentFrame %= this.currentAnimation.count;
+    this.currentFrame =
+      (this.currentFrame + dt * this.framesPerSecond) %
+      this.currentAnimation.count;
 
     this.texture.offset.y =
       1 - (this.currentAnimation.row + 1) / this.textureFramesVertical;
