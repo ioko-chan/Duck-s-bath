@@ -1,0 +1,26 @@
+{
+  "walk_down": {
+    "row": 0,
+    "count": 6
+  },
+  "walk_up": {
+    "row": 1,
+    "count": 6
+  },
+  "walk_right": {
+    "row": 2,
+    "count": 6
+  },
+  "walk_right_down": {
+    "row": 3,
+    "count": 6
+  },
+  "walk_right_up": {
+    "row": 4,
+    "count": 6
+  },
+  "idle": {
+    "row": 5,
+    "count": 27
+  }
+}
