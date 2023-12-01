@@ -71,7 +71,10 @@ let manager = nipplejs.create({
   size: (nipplejsWrapper.clientHeight * 3) / 4,
   zone: nipplejsWrapper,
   mode: "static",
-  position: { top: "10dvh", left: "10dvh" },
+  position: {
+    top: `${nipplejsWrapper.clientHeight / 2}px`,
+    left: `${nipplejsWrapper.clientWidth / 2}px`,
+  },
 });
 manager.on("move", (_event, data) => {
   player.direction = new THREE.Vector2(
