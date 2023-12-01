@@ -25,6 +25,7 @@ const camera = new THREE.OrthographicCamera(
   viewport.far,
 );
 camera.position.z = 1;
+camera.speed = 2;
 
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -60,6 +61,7 @@ function animate() {
   renderer.render(scene, camera);
   let dt = clock.getDelta();
   player.update(dt);
+  camera.position.lerp(player.sprite.position, camera.speed * dt);
 }
 animate();
 
