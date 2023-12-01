@@ -1,6 +1,9 @@
 import * as THREE from "three";
 import nipplejs from "nipplejs";
 
+import DebugInfo from "./DebugInfo";
+import Player from "./Player";
+
 const scene = new THREE.Scene();
 const w = window.innerWidth;
 const h = window.innerHeight;
@@ -33,20 +36,6 @@ document.body.appendChild(renderer.domElement);
 
 const clock = new THREE.Clock();
 
-class Player {
-  constructor() {
-    this.map = new THREE.TextureLoader().load("apple.png");
-    this.material = new THREE.SpriteMaterial({ map: this.map });
-    this.sprite = new THREE.Sprite(this.material);
-    this.direction = new THREE.Vector2(0, 0);
-    this.movementSpeed = 2;
-  }
-
-  update(dt) {
-    this.sprite.translateX(this.direction.x * this.movementSpeed * dt);
-    this.sprite.translateY(this.direction.y * this.movementSpeed * dt);
-  }
-}
 const player = new Player();
 scene.add(player.sprite);
 
@@ -56,12 +45,24 @@ const gridHelper = new THREE.GridHelper(gridSize, gridSize).rotateX(
 );
 scene.add(gridHelper);
 
+const debugInfo = new DebugInfo(document.getElementById("debug-wrapper"), 200);
+
 function animate() {
-  requestAnimationFrame(animate);
+  // Render
   renderer.render(scene, camera);
+
+  // Update
   let dt = clock.getDelta();
   player.update(dt);
   camera.position.lerp(player.sprite.position, camera.speed * dt);
+
+  // Debug info
+  debugInfo.infos[0] = `FPS: ${Math.floor(1 / dt)}`;
+  debugInfo.infos[1] = `Player position: ${
+    Math.floor(player.sprite.position.x * 100) / 100
+  } ${Math.floor(player.sprite.position.y * 100) / 100}`;
+
+  requestAnimationFrame(animate);
 }
 animate();
 
