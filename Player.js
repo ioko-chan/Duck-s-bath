@@ -25,8 +25,13 @@ class Player {
     this.framesPerSecond = 8;
     this.frameTime = 0;
 
-    this.material = new THREE.SpriteMaterial({ map: this.texture });
-    this.sprite = new THREE.Sprite(this.material);
+    this.material = new THREE.MeshBasicMaterial({
+      map: this.texture,
+      side: THREE.DoubleSide,
+      transparent: true,
+    });
+    this.geometry = new THREE.PlaneGeometry(1, 1);
+    this.sprite = new THREE.Mesh(this.geometry, this.material);
     this.direction = new THREE.Vector2(0, 0);
     this.movementSpeed = 2;
   }
@@ -38,7 +43,7 @@ class Player {
 
   movement(dt) {
     this.sprite.translateX(this.direction.x * this.movementSpeed * dt);
-    this.sprite.translateY(this.direction.y * this.movementSpeed * dt);
+    this.sprite.translateZ(-this.direction.y * this.movementSpeed * dt);
   }
 
   animation(dt) {

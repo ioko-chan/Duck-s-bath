@@ -1,38 +1,20 @@
 import * as THREE from "three";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import nipplejs from "nipplejs";
 
 import DebugInfo from "./DebugInfo";
 import Player from "./Player";
 
-const scene = new THREE.Scene();
-const w = window.innerWidth;
-const h = window.innerHeight;
-const viewSize = h / 200;
-const aspectRatio = w / h;
-const viewport = {
-  viewsize: viewSize,
-  aspectRatio: aspectRatio,
-  left: (-aspectRatio * viewSize) / 2,
-  right: (aspectRatio * viewSize) / 2,
-  top: viewSize / 2,
-  bottom: -viewSize / 2,
-  near: -100,
-  far: 100,
-};
-const camera = new THREE.OrthographicCamera(
-  viewport.left,
-  viewport.right,
-  viewport.top,
-  viewport.bottom,
-  viewport.near,
-  viewport.far,
-);
-camera.position.z = 1;
-camera.speed = 2;
-
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
+
+const width = window.innerWidth;
+const height = window.innerHeight;
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(45, width / height, 1, 1000);
+camera.speed = 2;
+camera.rotation.x = -Math.PI / 8;
 
 const clock = new THREE.Clock();
 
@@ -40,10 +22,11 @@ const player = new Player();
 scene.add(player.sprite);
 
 const gridSize = 10;
-const gridHelper = new THREE.GridHelper(gridSize, gridSize).rotateX(
-  Math.PI / 2,
-);
+const gridHelper = new THREE.GridHelper(gridSize, gridSize);
 scene.add(gridHelper);
+
+const axisHelper = new THREE.AxesHelper(10);
+scene.add(axisHelper);
 
 const debugInfo = new DebugInfo(document.getElementById("debug-wrapper"), 100);
 
@@ -54,14 +37,24 @@ function animate() {
   // Update
   let dt = clock.getDelta();
   player.update(dt);
-  camera.position.lerp(player.sprite.position, camera.speed * dt);
+  const target = new THREE.Vector3(
+    player.sprite.position.x,
+    5,
+    player.sprite.position.z + 10,
+  );
+  camera.position.lerp(target, camera.speed * dt);
 
   // Debug info
   debugInfo.infos[0] = `FPS: ${Math.floor(1 / dt)}`;
   debugInfo.infos[1] = `Player position: ${
     Math.floor(player.sprite.position.x * 100) / 100
-  } ${Math.floor(player.sprite.position.y * 100) / 100}`;
+  } ${Math.floor(player.sprite.position.z * 100) / 100}`;
   debugInfo.infos[2] = `Current frame: ${Math.ceil(player.currentFrame)}`;
+  debugInfo.infos[3] = `Camera position: ${
+    Math.floor(camera.position.x * 100) / 100
+  } ${Math.floor(camera.position.y * 100) / 100} ${
+    Math.floor(camera.position.z * 100) / 100
+  }`;
 
   requestAnimationFrame(animate);
 }
