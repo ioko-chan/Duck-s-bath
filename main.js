@@ -14,6 +14,7 @@ const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(45, width / height, 1, 1000);
 camera.speed = 2;
 camera.rotation.x = -Math.PI / 8;
+camera.offset = new THREE.Vector3(0, 5, 10);
 
 const clock = new THREE.Clock();
 
@@ -39,12 +40,10 @@ function animate() {
   // Update
   let dt = clock.getDelta();
   player.update(dt);
-  const target = new THREE.Vector3(
-    player.sprite.position.x,
-    5,
-    player.sprite.position.z + 10,
+  camera.position.lerp(
+    new THREE.Vector3().copy(player.sprite.position).add(camera.offset),
+    camera.speed * dt,
   );
-  camera.position.lerp(target, camera.speed * dt);
 
   // Debug info
   debug_info.FPS = Math.floor(1 / dt);
@@ -83,8 +82,12 @@ player_folder.add(player.sprite.position, "x").name("Position.x");
 player_folder.add(player.sprite.position, "y").name("Position.y");
 player_folder.add(player.sprite.position, "z").name("Position.z");
 player_folder.add(player, "movementSpeed", 0, 5).name("Speed");
+player_folder.add(player, "framesPerSecond").name("Frames/second");
 
 const camera_folder = gui.addFolder("Camera");
+camera_folder.add(camera.offset, "x").name("Offset.x");
+camera_folder.add(camera.offset, "y").name("Offset.y");
+camera_folder.add(camera.offset, "z").name("Offset.z");
 camera_folder.add(camera, "speed", 0, 5).name("Speed");
 
 const light_folder = gui.addFolder("Light");
