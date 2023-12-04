@@ -6,6 +6,7 @@ import Player from "./Player";
 
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.shadowMap.enabled = true;
 document.body.appendChild(renderer.domElement);
 
 const width = window.innerWidth;
@@ -22,14 +23,38 @@ const player = new Player();
 scene.add(player.sprite);
 
 const gridSize = 10;
-const gridHelper = new THREE.GridHelper(gridSize, gridSize);
+const gridHelper = new THREE.GridHelper(gridSize, gridSize).translateY(-0.49);
 scene.add(gridHelper);
 
-const axisHelper = new THREE.AxesHelper(10);
+const axisHelper = new THREE.AxesHelper(10).translateY(-0.49);
 scene.add(axisHelper);
 
 const ambientLight = new THREE.AmbientLight("white", 3);
 scene.add(ambientLight);
+
+player.sprite.castShadow = true;
+
+const directionalLight = new THREE.DirectionalLight("white", 3);
+directionalLight.position.set(0, 1, 0);
+directionalLight.target.position.set(1, 0, -1);
+directionalLight.castShadow = true;
+scene.add(
+  directionalLight,
+  directionalLight.target,
+  new THREE.DirectionalLightHelper(directionalLight),
+);
+
+const planeSize = 10;
+const geometry = new THREE.PlaneGeometry(planeSize, planeSize);
+const material = new THREE.MeshStandardMaterial({
+  color: "gray",
+  side: THREE.DoubleSide,
+});
+const plane = new THREE.Mesh(geometry, material)
+  .translateY(-0.5)
+  .rotateX(Math.PI / 2);
+plane.receiveShadow = true;
+scene.add(plane);
 
 let debug_info = {};
 
