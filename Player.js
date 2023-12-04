@@ -25,7 +25,7 @@ class Player {
     this.framesPerSecond = 8;
     this.frameTime = 0;
 
-    this.material = new THREE.MeshBasicMaterial({
+    this.material = new THREE.MeshStandardMaterial({
       map: this.texture,
       side: THREE.DoubleSide,
       transparent: true,

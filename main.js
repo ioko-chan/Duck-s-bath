@@ -1,8 +1,7 @@
 import * as THREE from "three";
-import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import nipplejs from "nipplejs";
+import GUI from "lil-gui";
 
-import DebugInfo from "./DebugInfo";
 import Player from "./Player";
 
 const renderer = new THREE.WebGLRenderer();
@@ -28,7 +27,10 @@ scene.add(gridHelper);
 const axisHelper = new THREE.AxesHelper(10);
 scene.add(axisHelper);
 
-const debugInfo = new DebugInfo(document.getElementById("debug-wrapper"), 100);
+const ambientLight = new THREE.AmbientLight("white", 3);
+scene.add(ambientLight);
+
+let debug_info = {};
 
 function animate() {
   // Render
@@ -45,16 +47,7 @@ function animate() {
   camera.position.lerp(target, camera.speed * dt);
 
   // Debug info
-  debugInfo.infos[0] = `FPS: ${Math.floor(1 / dt)}`;
-  debugInfo.infos[1] = `Player position: ${
-    Math.floor(player.sprite.position.x * 100) / 100
-  } ${Math.floor(player.sprite.position.z * 100) / 100}`;
-  debugInfo.infos[2] = `Current frame: ${Math.ceil(player.currentFrame)}`;
-  debugInfo.infos[3] = `Camera position: ${
-    Math.floor(camera.position.x * 100) / 100
-  } ${Math.floor(camera.position.y * 100) / 100} ${
-    Math.floor(camera.position.z * 100) / 100
-  }`;
+  debug_info.FPS = Math.floor(1 / dt);
 
   requestAnimationFrame(animate);
 }
@@ -79,3 +72,27 @@ manager.on("move", (_event, data) => {
 manager.on("end", (_event) => {
   player.direction = new THREE.Vector2(0, 0);
 });
+
+const gui = new GUI().title("Debug menu");
+const info_folder = gui.addFolder("Info");
+Object.keys(debug_info).forEach((key) => {
+  info_folder.add(debug_info, key).disable();
+});
+const player_folder = gui.addFolder("Player");
+player_folder.add(player.sprite.position, "x").name("Position.x");
+player_folder.add(player.sprite.position, "y").name("Position.y");
+player_folder.add(player.sprite.position, "z").name("Position.z");
+player_folder.add(player, "movementSpeed", 0, 5).name("Speed");
+
+const camera_folder = gui.addFolder("Camera");
+camera_folder.add(camera, "speed", 0, 5).name("Speed");
+
+const light_folder = gui.addFolder("Light");
+light_folder.add(ambientLight, "intensity", 0, 5).name("Intensity");
+light_folder.addColor(ambientLight, "color").name("Color");
+
+setInterval(() => {
+  gui
+    .controllersRecursive()
+    .forEach((controller) => controller.updateDisplay());
+}, 200);
