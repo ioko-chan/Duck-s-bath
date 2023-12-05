@@ -20,7 +20,7 @@ camera.offset = new THREE.Vector3(0, 5, 10);
 const clock = new THREE.Clock();
 
 const player = new Player();
-scene.add(player.sprite);
+scene.add(player.sprite.mesh, player.collider.mesh);
 
 const gridSize = 10;
 const gridHelper = new THREE.GridHelper(gridSize, gridSize).translateY(-0.49);
@@ -31,8 +31,6 @@ scene.add(axisHelper);
 
 const ambientLight = new THREE.AmbientLight("white", 3);
 scene.add(ambientLight);
-
-player.sprite.castShadow = true;
 
 const directionalLight = new THREE.DirectionalLight("white", 3);
 directionalLight.position.set(0, 1, 0);
@@ -66,13 +64,12 @@ function animate() {
   let dt = clock.getDelta();
   player.update(dt);
   camera.position.lerp(
-    new THREE.Vector3().copy(player.sprite.position).add(camera.offset),
+    new THREE.Vector3().copy(player.sprite.mesh.position).add(camera.offset),
     camera.speed * dt,
   );
 
   // Debug info
   debug_info.FPS = Math.floor(1 / dt);
-
   requestAnimationFrame(animate);
 }
 animate();
@@ -103,11 +100,11 @@ Object.keys(debug_info).forEach((key) => {
   info_folder.add(debug_info, key).disable();
 });
 const player_folder = gui.addFolder("Player");
-player_folder.add(player.sprite.position, "x").name("Position.x");
-player_folder.add(player.sprite.position, "y").name("Position.y");
-player_folder.add(player.sprite.position, "z").name("Position.z");
+player_folder.add(player.sprite.mesh.position, "x").name("Position.x");
+player_folder.add(player.sprite.mesh.position, "y").name("Position.y");
+player_folder.add(player.sprite.mesh.position, "z").name("Position.z");
 player_folder.add(player, "movementSpeed", 0, 5).name("Speed");
-player_folder.add(player, "framesPerSecond").name("Frames/second");
+player_folder.add(player.animation, "framesPerSecond").name("Frames/second");
 
 const camera_folder = gui.addFolder("Camera");
 camera_folder.add(camera.offset, "x").name("Offset.x");
