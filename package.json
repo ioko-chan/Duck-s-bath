@@ -4,7 +4,9 @@
     "three": "^0.158.0"
   },
   "devDependencies": {
+    "@types/three": "^0.159.0",
     "lil-gui": "^0.19.1",
+    "typescript": "^5.3.2",
     "vite": "^5.0.2"
   }
 }

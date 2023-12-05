@@ -1,18 +1,43 @@
 import * as THREE from "three";
 import animationProperties from "./public/duck.json";
 
+interface ISprite {
+  texture: THREE.Texture;
+  geometry: THREE.PlaneGeometry;
+  material: THREE.MeshStandardMaterial;
+  mesh: THREE.Mesh;
+}
+
+interface ICollider {
+  material: THREE.ShadowMaterial;
+  geometry: THREE.CapsuleGeometry;
+  mesh: THREE.Mesh;
+}
+
+interface IAnimationProperty {
+  row: number;
+  count: number;
+}
+
+interface IAnimation {
+  currentAnimation: IAnimationProperty;
+  currentFrame: number;
+  framesPerSecond: number;
+  framesHorizontal: number;
+  framesVertical: number;
+}
+
 class Player {
-  sprite;
-  collider;
-  animation;
+  sprite: ISprite;
+  collider: ICollider;
+  animation: IAnimation;
+  direction = new THREE.Vector2(0, 0);
+  movementSpeed = 2;
 
   constructor() {
     this.createSprite();
     this.createCollider();
     this.initiateAnimation();
-
-    this.direction = new THREE.Vector2(0, 0);
-    this.movementSpeed = 2;
   }
 
   initiateAnimation() {
@@ -60,19 +85,19 @@ class Player {
     this.collider.mesh.castShadow = true;
   }
 
-  update(dt) {
+  update(dt: number) {
     this.move(dt);
     this.animate(dt);
   }
 
-  move(dt) {
+  move(dt: number) {
     this.sprite.mesh.translateX(this.direction.x * this.movementSpeed * dt);
     this.sprite.mesh.translateZ(-this.direction.y * this.movementSpeed * dt);
 
     this.collider.mesh.position.copy(this.sprite.mesh.position);
   }
 
-  animate(dt) {
+  animate(dt: number) {
     if (this.direction.x === 0 && this.direction.y === 0) {
       this.animation.currentAnimation = animationProperties.idle;
       this.sprite.texture.repeat.setX(1 / this.animation.framesHorizontal);

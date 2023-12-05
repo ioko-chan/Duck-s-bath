@@ -3,6 +3,7 @@ import nipplejs from "nipplejs";
 import GUI from "lil-gui";
 
 import Player from "./Player";
+import Camera from "./Camera";
 
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -12,10 +13,7 @@ document.body.appendChild(renderer.domElement);
 const width = window.innerWidth;
 const height = window.innerHeight;
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(45, width / height, 1, 1000);
-camera.speed = 2;
-camera.rotation.x = -Math.PI / 8;
-camera.offset = new THREE.Vector3(0, 5, 10);
+const camera = new Camera(45, width / height, 1, 100);
 
 const clock = new THREE.Clock();
 
@@ -54,7 +52,7 @@ const plane = new THREE.Mesh(geometry, material)
 plane.receiveShadow = true;
 scene.add(plane);
 
-let debug_info = {};
+let debug_info = { FPS: 0 };
 
 function animate() {
   // Render
@@ -63,10 +61,7 @@ function animate() {
   // Update
   let dt = clock.getDelta();
   player.update(dt);
-  camera.position.lerp(
-    new THREE.Vector3().copy(player.sprite.mesh.position).add(camera.offset),
-    camera.speed * dt,
-  );
+  camera.update(dt, player.sprite.mesh.position);
 
   // Debug info
   debug_info.FPS = Math.floor(1 / dt);
@@ -75,6 +70,9 @@ function animate() {
 animate();
 
 const nipplejsWrapper = document.getElementById("nipplejs-wrapper");
+if (nipplejsWrapper === null) {
+  throw new Error("Element with id 'nipplejs-wrapper' nor found");
+}
 let manager = nipplejs.create({
   size: (nipplejsWrapper.clientHeight * 3) / 4,
   zone: nipplejsWrapper,
