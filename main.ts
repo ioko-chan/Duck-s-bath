@@ -14,11 +14,9 @@ const width = window.innerWidth;
 const height = window.innerHeight;
 const scene = new THREE.Scene();
 const camera = new Camera(45, width / height, 1, 100);
-
 const clock = new THREE.Clock();
 
-const player = new Player();
-scene.add(player.sprite.mesh, player.collider.mesh);
+const player = new Player(scene);
 
 const gridSize = 10;
 const gridHelper = new THREE.GridHelper(gridSize, gridSize).translateY(-0.49);
