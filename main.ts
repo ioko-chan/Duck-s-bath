@@ -4,6 +4,7 @@ import GUI from "lil-gui";
 
 import Player from "./Player";
 import Camera from "./Camera";
+import Tilemap from "./Tilemap";
 
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -18,13 +19,6 @@ const clock = new THREE.Clock();
 
 const player = new Player(scene);
 
-const gridSize = 10;
-const gridHelper = new THREE.GridHelper(gridSize, gridSize).translateY(-0.49);
-scene.add(gridHelper);
-
-const axisHelper = new THREE.AxesHelper(10).translateY(-0.49);
-scene.add(axisHelper);
-
 const ambientLight = new THREE.AmbientLight("white", 3);
 scene.add(ambientLight);
 
@@ -38,17 +32,7 @@ scene.add(
   new THREE.DirectionalLightHelper(directionalLight),
 );
 
-const planeSize = 10;
-const geometry = new THREE.PlaneGeometry(planeSize, planeSize);
-const material = new THREE.MeshStandardMaterial({
-  color: "gray",
-  side: THREE.DoubleSide,
-});
-const plane = new THREE.Mesh(geometry, material)
-  .translateY(-0.5)
-  .rotateX(Math.PI / 2);
-plane.receiveShadow = true;
-scene.add(plane);
+new Tilemap(scene);
 
 let debug_info = { FPS: 0 };
 
