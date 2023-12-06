@@ -34,6 +34,51 @@ scene.add(
 
 new Tilemap(scene);
 
+const wall_height = 2;
+for (let x = -10; x <= 10; x++) {
+  const geometry = new THREE.PlaneGeometry(1, wall_height);
+  const material = new THREE.MeshStandardMaterial({
+    color: (x + 10) % 2 == 0 ? "#515151" : "#151515",
+    side: THREE.FrontSide,
+  });
+  const mesh = new THREE.Mesh(geometry, material);
+  mesh.translateZ(-10);
+  mesh.position.x = x + 0.5;
+  mesh.position.y = wall_height / 2;
+  mesh.receiveShadow = true;
+  scene.add(mesh);
+}
+
+for (let z = -10; z <= 10; z++) {
+  const geometry = new THREE.PlaneGeometry(1, wall_height);
+  const material = new THREE.MeshStandardMaterial({
+    color: (z + 10) % 2 == 0 ? "#515151" : "#151515",
+    side: THREE.FrontSide,
+  });
+  const mesh = new THREE.Mesh(geometry, material);
+  mesh.translateX(-10);
+  mesh.rotateY(Math.PI / 2);
+  mesh.position.z = z + 0.5;
+  mesh.position.y = wall_height / 2;
+  mesh.receiveShadow = true;
+  scene.add(mesh);
+}
+
+for (let z = -10; z <= 10; z++) {
+  const geometry = new THREE.PlaneGeometry(1, wall_height);
+  const material = new THREE.MeshStandardMaterial({
+    color: (z + 10) % 2 == 0 ? "#515151" : "#151515",
+    side: THREE.FrontSide,
+  });
+  const mesh = new THREE.Mesh(geometry, material);
+  mesh.translateX(11);
+  mesh.rotateY(-Math.PI / 2);
+  mesh.position.z = z + 0.5;
+  mesh.position.y = wall_height / 2;
+  mesh.receiveShadow = true;
+  scene.add(mesh);
+}
+
 let debug_info = { FPS: 0 };
 
 function animate() {

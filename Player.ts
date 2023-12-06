@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import animationProperties from "./public/duck.json";
+import { clamp } from "three/src/math/MathUtils";
 
 interface ISprite {
   texture: THREE.Texture;
@@ -73,6 +74,7 @@ class Player {
     this.sprite.material.map = this.sprite.texture;
     this.sprite.mesh.geometry = this.sprite.geometry;
     this.sprite.mesh.material = this.sprite.material;
+    this.sprite.mesh.position.y = 0.5;
   }
 
   createCollider() {
@@ -94,6 +96,13 @@ class Player {
   move(dt: number) {
     this.sprite.mesh.translateX(this.direction.x * this.movementSpeed * dt);
     this.sprite.mesh.translateZ(-this.direction.y * this.movementSpeed * dt);
+
+    this.sprite.mesh.position.x = clamp(
+      this.sprite.mesh.position.x,
+      -9.5,
+      10.5,
+    );
+    this.sprite.mesh.position.z = clamp(this.sprite.mesh.position.z, -9.5, 11);
 
     this.collider.mesh.position.copy(this.sprite.mesh.position);
   }

@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { clamp } from "three/src/math/MathUtils";
 
 class Camera extends THREE.PerspectiveCamera {
   speed = 2;
@@ -11,7 +12,11 @@ class Camera extends THREE.PerspectiveCamera {
 
   update(dt: number, target: THREE.Vector3) {
     this.position.lerp(
-      new THREE.Vector3().copy(target).add(this.offset),
+      new THREE.Vector3()
+        .copy(target)
+        .setZ(Math.min(target.z, 6.5))
+        .setX(clamp(target.x, -9, 9))
+        .add(this.offset),
       this.speed * dt,
     );
   }

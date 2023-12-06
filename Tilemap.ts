@@ -22,9 +22,7 @@ class Tile {
       map: texture,
       side: THREE.FrontSide,
     });
-    this.mesh = new THREE.Mesh(geometry, material)
-      .translateY(-0.5)
-      .rotateX(-Math.PI / 2);
+    this.mesh = new THREE.Mesh(geometry, material).rotateX(-Math.PI / 2);
     this.mesh.receiveShadow = true;
     this.mesh.position.x = x + 0.5;
     this.mesh.position.z = z + 0.5;
