@@ -6,6 +6,9 @@ import Player from "./Player";
 import Camera from "./Camera";
 import Tilemap from "./Tilemap";
 
+import * as FirstFloorTilemapProperties from "./public/FirstFloor.json";
+import * as SecondFloorTilemapProperties from "./public/SecondFloor.json";
+
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.shadowMap.enabled = true;
@@ -32,52 +35,9 @@ scene.add(
   new THREE.DirectionalLightHelper(directionalLight),
 );
 
-new Tilemap(scene);
-
-const wall_height = 2;
-for (let x = -10; x <= 10; x++) {
-  const geometry = new THREE.PlaneGeometry(1, wall_height);
-  const material = new THREE.MeshStandardMaterial({
-    color: (x + 10) % 2 == 0 ? "#515151" : "#151515",
-    side: THREE.FrontSide,
-  });
-  const mesh = new THREE.Mesh(geometry, material);
-  mesh.translateZ(-10);
-  mesh.position.x = x + 0.5;
-  mesh.position.y = wall_height / 2;
-  mesh.receiveShadow = true;
-  scene.add(mesh);
-}
-
-for (let z = -10; z <= 10; z++) {
-  const geometry = new THREE.PlaneGeometry(1, wall_height);
-  const material = new THREE.MeshStandardMaterial({
-    color: (z + 10) % 2 == 0 ? "#515151" : "#151515",
-    side: THREE.FrontSide,
-  });
-  const mesh = new THREE.Mesh(geometry, material);
-  mesh.translateX(-10);
-  mesh.rotateY(Math.PI / 2);
-  mesh.position.z = z + 0.5;
-  mesh.position.y = wall_height / 2;
-  mesh.receiveShadow = true;
-  scene.add(mesh);
-}
-
-for (let z = -10; z <= 10; z++) {
-  const geometry = new THREE.PlaneGeometry(1, wall_height);
-  const material = new THREE.MeshStandardMaterial({
-    color: (z + 10) % 2 == 0 ? "#515151" : "#151515",
-    side: THREE.FrontSide,
-  });
-  const mesh = new THREE.Mesh(geometry, material);
-  mesh.translateX(11);
-  mesh.rotateY(-Math.PI / 2);
-  mesh.position.z = z + 0.5;
-  mesh.position.y = wall_height / 2;
-  mesh.receiveShadow = true;
-  scene.add(mesh);
-}
+const firstFloor = new Tilemap(scene, FirstFloorTilemapProperties);
+const secondFloor = new Tilemap(scene, SecondFloorTilemapProperties);
+secondFloor.hide();
 
 let debug_info = { FPS: 0 };
 
