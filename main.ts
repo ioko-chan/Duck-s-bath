@@ -37,7 +37,141 @@ scene.add(
 
 const firstFloor = new Tilemap(scene, FirstFloorTilemapProperties);
 const secondFloor = new Tilemap(scene, SecondFloorTilemapProperties);
-secondFloor.hide();
+
+const vertices: Array<number> = [];
+
+const stairsWidth = 1;
+const stairsHeight = 2;
+const stairsLength = 3;
+
+const stairsRotation = Math.PI / 2;
+
+const stepWidth = stairsWidth;
+const stepHeight = 0.1;
+const stepCount = stairsHeight / stepHeight;
+const stepLength = stairsLength / stepCount;
+
+for (let i = 0; i < stepCount; ++i) {
+  vertices.push(
+    0,
+    i * stepHeight,
+    i * -stepLength,
+    stepWidth,
+    i * stepHeight,
+    i * -stepLength,
+    0,
+    i * stepHeight + stepHeight,
+    i * -stepLength,
+    stepWidth,
+    i * stepHeight,
+    i * -stepLength,
+    stepWidth,
+    i * stepHeight + stepHeight,
+    i * -stepLength,
+    0,
+    i * stepHeight + stepHeight,
+    i * -stepLength,
+    0,
+    i * stepHeight + stepHeight,
+    i * -stepLength,
+    0,
+    i * stepHeight + stepHeight,
+    i * -stepLength - stepLength,
+    stepWidth,
+    i * stepHeight + stepHeight,
+    i * -stepLength - stepLength,
+    stepWidth,
+    i * stepHeight + stepHeight,
+    i * -stepLength,
+    stepWidth,
+    i * stepHeight + stepHeight,
+    i * -stepLength - stepLength,
+    0,
+    i * stepHeight + stepHeight,
+    i * -stepLength,
+    stepWidth,
+    0,
+    i * -stepLength,
+    stepWidth,
+    i * stepHeight + stepHeight,
+    i * -stepLength,
+    stepWidth,
+    i * stepHeight + stepHeight,
+    i * -stepLength - stepLength,
+    stepWidth,
+    0,
+    i * -stepLength,
+    stepWidth,
+    0,
+    i * -stepLength - stepLength,
+    stepWidth,
+    i * stepHeight + stepHeight,
+    i * -stepLength - stepLength,
+    0,
+    0,
+    i * -stepLength,
+    0,
+    i * stepHeight + stepHeight,
+    i * -stepLength,
+    0,
+    i * stepHeight + stepHeight,
+    i * -stepLength - stepLength,
+    0,
+    0,
+    i * -stepLength,
+    0,
+    0,
+    i * -stepLength - stepLength,
+    0,
+    i * stepHeight + stepHeight,
+    i * -stepLength - stepLength,
+  );
+}
+
+function isPointInsideRect(
+  rect1: THREE.Vector2,
+  rect2: THREE.Vector2,
+  point: THREE.Vector2,
+) {
+  const A = new THREE.Vector2(rect1.x, rect1.y);
+  const B = new THREE.Vector2(rect2.x, rect1.y);
+  const C = new THREE.Vector2(rect2.x, rect2.y);
+  const vec = (p1: THREE.Vector2, p2: THREE.Vector2) => {
+    return new THREE.Vector2(p2.x - p1.x, p2.y - p1.y);
+  };
+  const AB = vec(A, B);
+  const AM = vec(A, point);
+  const BC = vec(B, C);
+  const BM = vec(B, point);
+  const dotABAM = AB.dot(AM);
+  const dotABAB = AB.dot(AB);
+  const dotBCBM = BC.dot(BM);
+  const dotBCBC = BC.dot(BC);
+  return (
+    0 <= dotABAM && dotABAM <= dotABAB && 0 <= dotBCBM && dotBCBM <= dotBCBC
+  );
+}
+
+const stairs = {
+  material: new THREE.MeshStandardMaterial({
+    color: "blue",
+    side: THREE.DoubleSide,
+  }),
+  geometry: new THREE.BufferGeometry(),
+  mesh: new THREE.Mesh(),
+};
+stairs.geometry.setAttribute(
+  "position",
+  new THREE.BufferAttribute(new Float32Array(vertices), 3),
+);
+stairs.mesh.geometry = stairs.geometry;
+stairs.mesh.material = stairs.material;
+stairs.mesh.castShadow = true;
+stairs.mesh.receiveShadow = true;
+stairs.mesh.position.x = -9 + stairsLength;
+stairs.mesh.position.z = -9;
+stairs.mesh.rotateY(stairsRotation);
+scene.add(stairs.mesh);
 
 let debug_info = { FPS: 0 };
 
@@ -50,6 +184,37 @@ function animate() {
   player.update(dt);
   camera.update(dt, player.sprite.mesh.position);
 
+  const stairsPosition1 = new THREE.Vector2(
+    stairs.mesh.position.x,
+    stairs.mesh.position.z,
+  );
+  const stairsPosition2 = new THREE.Vector2(
+    stairs.mesh.position.x - stairsWidth,
+    stairs.mesh.position.z + stairsLength,
+  ).rotateAround(stairsPosition1, stairsRotation);
+
+  if (
+    isPointInsideRect(
+      stairsPosition1,
+      stairsPosition2,
+      new THREE.Vector2(
+        player.sprite.mesh.position.x,
+        player.sprite.mesh.position.z,
+      ),
+    )
+  ) {
+    const startX = stairs.mesh.position.x;
+    const endX = startX - stairsLength;
+    const x = player.sprite.mesh.position.x - startX;
+    const normalX = x / (endX - startX);
+    player.sprite.mesh.position.y = normalX * stairsHeight + 0.5;
+  }
+
+  if (player.sprite.mesh.position.y >= secondFloor.y) {
+    secondFloor.show();
+  } else {
+    secondFloor.hide();
+  }
   // Debug info
   debug_info.FPS = Math.floor(1 / dt);
   requestAnimationFrame(animate);

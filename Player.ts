@@ -38,6 +38,7 @@ class Player {
   constructor(scene: THREE.Scene) {
     this.createSprite();
     this.createCollider();
+    this.collider.mesh.visible = false;
     this.initiateAnimation();
     scene.add(this.sprite.mesh, this.collider.mesh);
   }

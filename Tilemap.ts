@@ -46,8 +46,10 @@ class Tile {
 class Tilemap {
   tiles: Array<Tile> = Array();
   walls: Array<THREE.Mesh> = Array();
+  y: number;
 
   constructor(scene: THREE.Scene, properties: TilemapProperties) {
+    this.y = properties.y;
     const tilemapSize = new THREE.Vector2(properties.width, properties.height);
     for (const property of properties.map) {
       const position = new THREE.Vector3(property.x, properties.y, property.z);
